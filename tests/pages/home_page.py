@@ -1,5 +1,7 @@
+from config import BASE_URL
+
 class HomePage:
-    URL = "http://localhost:3000"
+    URL = BASE_URL
 
     def __init__(self, page):
         self.page = page

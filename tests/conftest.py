@@ -1,5 +1,9 @@
 import pytest
 from playwright.sync_api import sync_playwright
+from pages.home_page import HomePage
+from pages.login_page import LoginPage
+
+BASE_URL = "http://localhost:3000"
 
 @pytest.fixture(scope="session")
 def browser():
@@ -10,13 +14,28 @@ def browser():
 
 @pytest.fixture
 def page(browser):
-    page = browser.new_page()
+    context = browser.new_context()
+    page = context.new_page()
     yield page
     page.close()
+    context.close()
+
+@pytest.fixture
+def auth_page(browser):
+    context = browser.new_context(storage_state="auth.json")
+    page = context.new_page()
+    yield page
+    page.close()
+    context.close()
 
 @pytest.fixture
 def home_page(page):
-    from pages.home_page import HomePage
     home = HomePage(page)
+    home.navigate()
+    return home
+
+@pytest.fixture
+def auth_home_page(auth_page):
+    home = HomePage(auth_page)
     home.navigate()
     return home
