@@ -3,8 +3,6 @@ from playwright.sync_api import sync_playwright
 from pages.home_page import HomePage
 from pages.login_page import LoginPage
 
-BASE_URL = "http://localhost:3000"
-
 @pytest.fixture(scope="session")
 def browser():
     with sync_playwright() as p:

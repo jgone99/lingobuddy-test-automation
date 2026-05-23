@@ -1,7 +1,7 @@
-from config import BASE_URL
+from config import SIGN_IN_URL
 
 class LoginPage:
-    URL = f"{BASE_URL}/sign-in"
+    URL = SIGN_IN_URL
 
     def __init__(self, page):
         self.page = page

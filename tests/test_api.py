@@ -1,9 +1,8 @@
 import requests
-
-BASE_URL = "http://localhost:3000/api"
+from config import OPENAI_API_URL
 
 def test_chatbot_requires_auth():
-    response = requests.post(f"{BASE_URL}/openai", json={
+    response = requests.post(OPENAI_API_URL, json={
         "userMessage": "Hello",
         "conversationId": None
     })
