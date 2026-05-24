@@ -5,6 +5,7 @@ load_dotenv()
 
 TEST_EMAIL = os.getenv("TEST_EMAIL")
 TEST_PASSWORD = os.getenv("TEST_PASSWORD")
+TEST_DATABASE_URL = os.getenv("TEST_DATABASE_URL")
 
 # Page Urls
 BASE_URL = os.getenv("BASE_URL", "http://localhost:3000")
