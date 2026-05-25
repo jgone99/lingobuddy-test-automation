@@ -4,7 +4,10 @@ from playwright.sync_api import sync_playwright
 from pages.home_page import HomePage
 from pages.login_page import LoginPage
 from pages.snowman_page import SnowmanPage
-from config import TEST_DATABASE_URL
+from config import (
+    TEST_DATABASE_URL,
+    TEST_USER_ID
+)
 
 @pytest.fixture(scope="session")
 def browser():
@@ -56,3 +59,11 @@ def db():
     cursor.close()
     conn.rollback()
     conn.close()
+
+@pytest.fixture
+def reset_snowman_progress(db):
+    db.execute("UPDATE progress SET snowman_highscore = 0 WHERE user_id = %s", (TEST_USER_ID,))
+    db.connection.commit()
+    yield
+    db.execute("UPDATE progress SET snowman_highscore = 0 WHERE user_id = %s", (TEST_USER_ID,))
+    db.connection.commit()
