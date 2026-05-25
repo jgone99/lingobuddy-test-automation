@@ -15,12 +15,16 @@ PROTECTED_URLS = [
     MATCHING_URL
 ]
 
+@pytest.mark.ui
+@pytest.mark.auth
 @pytest.mark.parametrize("url", PROTECTED_URLS)
 def test_protected_routes_redirect_when_logged_out(page, url):
     page.goto(url)
     page.wait_for_url(f"{SIGN_IN_URL}**")
     assert page.url.startswith(SIGN_IN_URL), f"Expected redirect to sign-in, got {page.url}"
 
+@pytest.mark.ui
+@pytest.mark.auth
 @pytest.mark.parametrize("url", PROTECTED_URLS)
 def test_routes_accessible_when_logged_in(auth_page, url):
     auth_page.goto(url)

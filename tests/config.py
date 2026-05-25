@@ -3,6 +3,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+collect_ignore = ["tests/auth_setup.py"]
+
 TEST_EMAIL = os.getenv("TEST_EMAIL")
 TEST_PASSWORD = os.getenv("TEST_PASSWORD")
 TEST_DATABASE_URL = os.getenv("TEST_DATABASE_URL")
