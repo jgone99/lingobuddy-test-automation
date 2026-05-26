@@ -1,9 +1,10 @@
 from config import SIGN_IN_URL
+from playwright.sync_api import Page, expect
 
 class LoginPage:
     URL = SIGN_IN_URL
 
-    def __init__(self, page):
+    def __init__(self, page: Page):
         self.page = page
         self.email_input = page.locator("#identifier-field")
         self.password_input = page.locator("#password-field")
@@ -12,7 +13,10 @@ class LoginPage:
     def navigate(self):
         self.page.goto(self.URL)
 
-    def login(self, email, password):
+    def wait_for_load(self):
+        expect(self.email_input).to_be_visible()
+
+    def login(self, email: str, password: str):
         self.email_input.fill(email)
         self.continue_button.click()
         self.password_input.wait_for()
