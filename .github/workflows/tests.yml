@@ -57,7 +57,6 @@ jobs:
           GCP_SA_KEY=${{ secrets.GCP_SA_KEY }}
           USE_TEST_DB=true
           EOF
-          echo "GCP_SA_KEY=$(echo ${{ secrets.GCP_SA_KEY }} | base64 --decode)" >> .env.local
 
       - name: Start Lingobuddy
         working-directory: lingobuddy
