@@ -1,0 +1,92 @@
+name: Test Suite
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    run-on: ubuntu-latest
+
+    steps:
+      - name: Checkout test automation repo
+        uses: actions/checkout@v4
+
+      - name: Checkout Lingobuddy repo
+        uses: actions/checkout@v4
+        with:
+          repository: jgone99/lingobuddy
+          path: lingobuddy
+
+      - name: Set up Node.jobs
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Cache Node modules
+        uses: actions/cache@v4
+        with:
+          path: lingobuddy/node_modules
+          key: node-${{ hashFiles('lingobuddy/package-lock.json') }}
+
+      - name: Cache Python packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: pip-${{ hashFiles('requirements.txt') }}
+
+      - name: Install Lingobuddy dependencies
+        working-directory: lingobuddy
+        run: npm Install
+
+      - name: Install additional dependencies
+        run: npm install -g wait-on
+
+      - name: Create Lingobuddy .env.local
+        working-directory: lingobuddy
+        run: |
+          cat > .env.local << EOF
+          DATABASE_URL=${{ secrets.DATABASE_URL }}
+          TEST_DATABASE_URL=${{ secrets.TEST_DATABASE_URL }}
+          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
+          CLERK_SECRET_KEY=${{ secrets.CLERK_SECRET_KEY }}
+          WEBHOOK_SECRET=${{ secrets.WEBHOOK_SECRET }}
+          OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
+          USE_TEST_DB=true
+          EOF
+          echo "GCP_SA_KEY=$(echo ${{ secrets.GCP_SA_KEY }} | base64 -d)" >> .env.local
+
+      - name: Start Lingobuddy
+        working-directory: lingobuddy
+        run: |
+          npm run dev &
+          npx wait-on ${{ secrets.BASE_URL }} --timeout 60000
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Python dependencies
+        run: |
+          pip install -r requirements.txt
+          python -m playwright install --with-deps chromium
+
+      - name: Create .env file
+        run: |
+          cat > .env << EOF
+          BASE_URL=${{ secrets.BASE_URL }}
+          TEST_EMAIL=${{ secrets.TEST_EMAIL }}
+          TEST_PASSWORD=${{ secrets.TEST_PASSWORD }}
+          TEST_DATABASE_URL=${{ secrets.TEST_DATABASE_URL }}
+          TEST_USER_ID=${{ secrets.TEST_USER_ID }}
+          HEADLESS=true
+          EOF
+
+      - name: Generate auth state
+        run: pytest test/auth_setup.py -v4
+
+      - name: Run test Suite
+        run: pytest
