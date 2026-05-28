@@ -54,7 +54,7 @@ jobs:
           CLERK_SECRET_KEY=${{ secrets.CLERK_SECRET_KEY }}
           WEBHOOK_SECRET=${{ secrets.WEBHOOK_SECRET }}
           OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
-          GCP_SA_KEY=${{ secrest.GCP_SA_KEY }}
+          GCP_SA_KEY=${{ secrets.GCP_SA_KEY }}
           USE_TEST_DB=true
           EOF
           echo "GCP_SA_KEY=$(echo ${{ secrets.GCP_SA_KEY }} | base64 --decode)" >> .env.local
